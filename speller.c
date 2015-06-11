@@ -33,9 +33,7 @@ SpellResult *new_spell_result(char *word) {
 
     result->word = word;
     result->is_correct = is_word_correct(word);
-    if(!result->is_correct) {
-        result->possible_corrections = get_possible_corrections(word);
-    }
+    result->possible_corrections = get_possible_corrections(word);
     return result;
 }
 
