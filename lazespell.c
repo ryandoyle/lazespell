@@ -17,6 +17,21 @@ void entry_changed_event(GtkWidget *entry, GtkEntryCompletion *completion) {
 
     SpellResult *result = new_spell_result(word);
 
+    if(result->is_correct) {
+        GdkRGBA green;
+        green.alpha = 1.0;
+        green.blue = 0.4;
+        green.green = 1.0;
+        green.red = 0.4;
+        gtk_widget_override_background_color(entry, GTK_STATE_FLAG_NORMAL, &green);
+    } else {
+        GdkRGBA red;
+        red.alpha = 1.0;
+        red.blue = 0.6;
+        red.green = 0.6;
+        red.red = 0.9;
+        gtk_widget_override_background_color(entry, GTK_STATE_FLAG_NORMAL, &red);
+    }
 
     printf("CORRRECTIONS FOR: %s\n", word);
 
@@ -54,7 +69,6 @@ int main(int argc, char **argv) {
 
 
     entry = gtk_entry_new();
-    gtk_entry_set_text(GTK_ENTRY(entry), "derps");
 
     g_signal_connect(entry, "changed", G_CALLBACK(entry_changed_event), completion);
 
