@@ -2,6 +2,7 @@
 #include "speller.h"
 
 
+#define MAXIMUM_SUGGESTIONS 10
 
 void entry_changed_event(GtkWidget *entry, GtkEntryCompletion *completion) {
 
@@ -34,8 +35,11 @@ void entry_changed_event(GtkWidget *entry, GtkEntryCompletion *completion) {
     }
 
     const char *correction;
-    while ((correction = spell_result_suggestion_iterator(result)) != NULL )
+    int iteration = 0;
+    while ((correction = spell_result_suggestion_iterator(result)) != NULL)
     {
+        if(iteration++ == MAXIMUM_SUGGESTIONS)
+            break;
         gtk_list_store_append(GTK_LIST_STORE(model), &iter);
         gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, correction, -1);
     }
