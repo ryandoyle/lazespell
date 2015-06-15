@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 #include "speller.h"
 
 
@@ -47,6 +48,24 @@ void entry_changed_event(GtkWidget *entry, GtkEntryCompletion *completion) {
     destroy_spell_result(result);
 }
 
+gboolean entry_key_press(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
+    GtkEntry *entry = GTK_ENTRY(widget);
+
+    switch(event->keyval) {
+        case GDK_KEY_Escape:
+            /* Single escape: clear the text, double: quit completely */
+            if(gtk_entry_get_text_length(entry) == 0) {
+                gtk_main_quit();
+            } else {
+                gtk_entry_set_text(entry, "");
+            }
+        default:
+            return FALSE;
+    }
+
+    return FALSE;
+}
+
 gboolean noop_match(GtkEntryCompletion *completion,
                     const gchar *key,
                     GtkTreeIter *iter,
@@ -71,7 +90,7 @@ int main(int argc, char **argv) {
     entry = gtk_entry_new();
 
     g_signal_connect(entry, "changed", G_CALLBACK(entry_changed_event), completion);
-
+    g_signal_connect(entry, "key_press_event", G_CALLBACK(entry_key_press), NULL);
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     g_signal_connect(window, "delete-event", G_CALLBACK(gtk_main_quit), NULL);
     gtk_container_add(GTK_CONTAINER(window), entry);
