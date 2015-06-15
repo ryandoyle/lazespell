@@ -57,18 +57,14 @@ void entry_activate(GtkEntry *entry, GtkClipboard  *clipboard) {
 gboolean entry_key_press(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
     GtkEntry *entry = GTK_ENTRY(widget);
 
-    switch(event->keyval) {
-        case GDK_KEY_Escape:
-            /* Single escape: clear the text, double: quit completely */
-            if(gtk_entry_get_text_length(entry) == 0) {
-                gtk_main_quit();
-            } else {
-                gtk_entry_set_text(entry, "");
-            }
-        default:
-            return FALSE;
+    if(event->keyval == GDK_KEY_Escape) {
+        /* Single escape: clear the text, double: quit completely */
+        if (gtk_entry_get_text_length(entry) == 0) {
+            gtk_main_quit();
+        } else {
+            gtk_entry_set_text(entry, "");
+        }
     }
-
     return FALSE;
 }
 
