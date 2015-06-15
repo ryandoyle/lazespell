@@ -4,7 +4,7 @@
 
 #define MAXIMUM_SUGGESTIONS 10
 
-void entry_changed_event(GtkWidget *entry, GtkEntryCompletion *completion) {
+static void entry_changed_event(GtkWidget *entry, GtkEntryCompletion *completion) {
 
     const char *word;
     GtkTreeModel *model;
@@ -47,13 +47,13 @@ void entry_changed_event(GtkWidget *entry, GtkEntryCompletion *completion) {
     spell_result_destroy(result);
 }
 
-void entry_activate(GtkEntry *entry, GtkClipboard  *clipboard) {
+static void entry_activate(GtkEntry *entry, GtkClipboard  *clipboard) {
     gtk_clipboard_set_text(clipboard, gtk_entry_get_text(entry), gtk_entry_get_text_length(entry));
     gtk_clipboard_store(clipboard);
     gtk_main_quit();
 }
 
-gboolean entry_key_press(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
+static gboolean entry_key_press(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
     GtkEntry *entry = GTK_ENTRY(widget);
 
     if(event->keyval == GDK_KEY_Escape) {
@@ -67,7 +67,7 @@ gboolean entry_key_press(GtkWidget *widget, GdkEventKey *event, gpointer user_da
     return FALSE;
 }
 
-gboolean noop_match(GtkEntryCompletion *completion,
+static gboolean noop_match(GtkEntryCompletion *completion,
                     const gchar *key,
                     GtkTreeIter *iter,
                     gpointer user_data) {
