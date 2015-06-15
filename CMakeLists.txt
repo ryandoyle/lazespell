@@ -18,3 +18,4 @@ add_library(speller speller.c)
 target_link_libraries(lazespell speller ${GTK3_LIBRARIES})
 target_link_libraries(speller aspell)
 
+install(TARGETS lazespell DESTINATION bin)
