@@ -48,6 +48,12 @@ void entry_changed_event(GtkWidget *entry, GtkEntryCompletion *completion) {
     destroy_spell_result(result);
 }
 
+void entry_activate(GtkEntry *entry, GtkClipboard  *clipboard) {
+    gtk_clipboard_set_text(clipboard, gtk_entry_get_text(entry), gtk_entry_get_text_length(entry));
+    gtk_clipboard_store(clipboard);
+    gtk_main_quit();
+}
+
 gboolean entry_key_press(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
     GtkEntry *entry = GTK_ENTRY(widget);
 
@@ -80,17 +86,21 @@ int main(int argc, char **argv) {
     GtkWidget *window;
     GtkListStore *model;
     GtkEntryCompletion *completion;
+    GtkClipboard *clipboard;
 
     gtk_init(&argc, &argv);
 
     model = gtk_list_store_new(1, G_TYPE_STRING);
     completion = gtk_entry_completion_new();
 
+    clipboard = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
 
     entry = gtk_entry_new();
 
     g_signal_connect(entry, "changed", G_CALLBACK(entry_changed_event), completion);
     g_signal_connect(entry, "key_press_event", G_CALLBACK(entry_key_press), NULL);
+    g_signal_connect(entry, "activate", G_CALLBACK(entry_activate), clipboard);
+
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     g_signal_connect(window, "delete-event", G_CALLBACK(gtk_main_quit), NULL);
     gtk_container_add(GTK_CONTAINER(window), entry);
