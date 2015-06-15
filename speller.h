@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 typedef struct {
-    char *word;
+    const char *word;
     int is_correct;
     AspellStringEnumeration *possible_corrections;
 
@@ -11,5 +11,7 @@ typedef struct {
 
 static AspellSpeller *speller;
 
-SpellResult *new_spell_result(char *word);
+SpellResult *spell_result_new(const char *word);
 void destroy_spell_result(SpellResult *result);
+int spell_result_is_correct(SpellResult *result);
+const char *spell_result_suggestion_iterator(SpellResult *result);

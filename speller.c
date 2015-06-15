@@ -19,22 +19,30 @@ static AspellSpeller *get_spell_checker(void) {
     return speller;
 }
 
-static int is_word_correct(char *word) {
+static int is_word_correct(const char *word) {
     return aspell_speller_check(get_spell_checker(), word, -1) != 0;
 }
 
-static AspellStringEnumeration *get_possible_corrections(char *word) {
+static AspellStringEnumeration *get_possible_corrections(const char *word) {
     const AspellWordList *suggestions = aspell_speller_suggest(get_spell_checker(), word, -1);
     return aspell_word_list_elements(suggestions);
 }
 
-SpellResult *new_spell_result(char *word) {
+SpellResult *spell_result_new(const char *word) {
     SpellResult *result = malloc(sizeof(SpellResult));
 
     result->word = word;
     result->is_correct = is_word_correct(word);
     result->possible_corrections = get_possible_corrections(word);
     return result;
+}
+
+int spell_result_is_correct(SpellResult *result) {
+    return result->is_correct;
+}
+
+const char *spell_result_suggestion_iterator(SpellResult *result) {
+    return aspell_string_enumeration_next(result->possible_corrections);
 }
 
 

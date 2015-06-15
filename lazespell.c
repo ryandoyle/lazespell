@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <gtk/gtk.h>
 #include "speller.h"
 
@@ -6,18 +5,19 @@
 
 void entry_changed_event(GtkWidget *entry, GtkEntryCompletion *completion) {
 
-    GtkTreeModel *model = gtk_entry_completion_get_model(completion);
+    const char *word;
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+    SpellResult *result;
+
+    word =  gtk_entry_get_text(GTK_ENTRY(entry));
+    result = spell_result_new(word);
+    model = gtk_entry_completion_get_model(completion);
+
     gtk_list_store_clear(GTK_LIST_STORE(model));
 
-    GtkTreeIter iter;
 
-
-    const char *word = gtk_entry_get_text(GTK_ENTRY(entry));
-    printf("%s\n", word);
-
-    SpellResult *result = new_spell_result(word);
-
-    if(result->is_correct) {
+    if(spell_result_is_correct(result)) {
         GdkRGBA green;
         green.alpha = 1.0;
         green.blue = 0.4;
@@ -33,18 +33,14 @@ void entry_changed_event(GtkWidget *entry, GtkEntryCompletion *completion) {
         gtk_widget_override_background_color(entry, GTK_STATE_FLAG_NORMAL, &red);
     }
 
-    printf("CORRRECTIONS FOR: %s\n", word);
-
     const char *correction;
-    while ( (correction = aspell_string_enumeration_next(result->possible_corrections)) != NULL )
+    while ((correction = spell_result_suggestion_iterator(result)) != NULL )
     {
-        printf("%s\n", correction);
         gtk_list_store_append(GTK_LIST_STORE(model), &iter);
         gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, correction, -1);
     }
 
     destroy_spell_result(result);
-
 }
 
 gboolean noop_match(GtkEntryCompletion *completion,
