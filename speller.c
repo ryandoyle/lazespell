@@ -46,7 +46,7 @@ const char *spell_result_suggestion_iterator(SpellResult *result) {
 }
 
 
-void destroy_spell_result(SpellResult *result) {
+void spell_result_destroy(SpellResult *result) {
     if(result->possible_corrections != NULL) {
         delete_aspell_string_enumeration(result->possible_corrections);
     }

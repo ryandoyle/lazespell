@@ -44,7 +44,7 @@ void entry_changed_event(GtkWidget *entry, GtkEntryCompletion *completion) {
         gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0, correction, -1);
     }
 
-    destroy_spell_result(result);
+    spell_result_destroy(result);
 }
 
 void entry_activate(GtkEntry *entry, GtkClipboard  *clipboard) {
@@ -109,6 +109,7 @@ int main(int argc, char **argv) {
 
 
     gtk_entry_completion_set_text_column(completion, 0);
+    gtk_entry_completion_set_inline_completion(completion, TRUE);
     gtk_entry_set_completion(GTK_ENTRY(entry), completion);
 
     gtk_entry_completion_set_match_func(completion, noop_match, NULL, NULL);
