@@ -109,6 +109,7 @@ int main(int argc, char **argv) {
     gtk_window_set_decorated(GTK_WINDOW(window), FALSE);
     gtk_window_set_has_resize_grip(GTK_WINDOW(window), FALSE);
 
+    gtk_window_set_skip_taskbar_hint(GTK_WINDOW(window), TRUE);
     gtk_widget_show_all (window);
 
 
