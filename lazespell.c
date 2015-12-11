@@ -19,19 +19,9 @@ static void entry_changed_event(GtkWidget *entry, GtkEntryCompletion *completion
 
 
     if(spell_result_is_correct(result)) {
-        GdkRGBA green;
-        green.alpha = 1.0;
-        green.blue = 0.4;
-        green.green = 1.0;
-        green.red = 0.4;
-        gtk_widget_override_background_color(entry, GTK_STATE_FLAG_NORMAL, &green);
+      gtk_widget_set_name(entry, "correct");
     } else {
-        GdkRGBA red;
-        red.alpha = 1.0;
-        red.blue = 0.6;
-        red.green = 0.6;
-        red.red = 0.9;
-        gtk_widget_override_background_color(entry, GTK_STATE_FLAG_NORMAL, &red);
+      gtk_widget_set_name(entry, "incorrect");
     }
 
     const char *correction;
@@ -62,6 +52,8 @@ static gboolean entry_key_press(GtkWidget *widget, GdkEventKey *event, gpointer 
             gtk_main_quit();
         } else {
             gtk_entry_set_text(entry, "");
+            /* Clear name do we don't have any CSS applied */
+            gtk_widget_set_name(widget, "");
         }
     }
     return FALSE;
@@ -83,7 +75,26 @@ int main(int argc, char **argv) {
     GtkEntryCompletion *completion;
     GtkClipboard *clipboard;
 
+    /* Colouring  */
+    GtkCssProvider *css_provider;
+    GdkDisplay *display;
+    GdkScreen *screen;
+
+
     gtk_init(&argc, &argv);
+
+    css_provider = gtk_css_provider_new();
+    display = gdk_display_get_default();
+    screen = gdk_display_get_default_screen(display);
+    gtk_style_context_add_provider_for_screen (screen, GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+    gtk_css_provider_load_from_data(GTK_CSS_PROVIDER(css_provider),
+        "GtkEntry#correct { background: #B6FFAD; }\n"
+        "GtkEntry#incorrect { background: #FFADAD; }\n", -1, NULL);
+
+    g_object_unref(css_provider);
+
+
 
     model = gtk_list_store_new(1, G_TYPE_STRING);
     completion = gtk_entry_completion_new();
