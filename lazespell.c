@@ -3,6 +3,9 @@
 
 
 #define MAXIMUM_SUGGESTIONS 10
+#define MINIMUM_TO_START_MATCH 3
+#define STYLE_CORRECT "correct"
+#define STYLE_INCORRECT "incorrect"
 
 static void entry_changed_event(GtkWidget *entry, GtkEntryCompletion *completion) {
 
@@ -18,11 +21,16 @@ static void entry_changed_event(GtkWidget *entry, GtkEntryCompletion *completion
     gtk_list_store_clear(GTK_LIST_STORE(model));
 
 
-    if(spell_result_is_correct(result)) {
-      gtk_widget_set_name(entry, "correct");
+    if (strlen(word) >= MINIMUM_TO_START_MATCH) {
+        if (spell_result_is_correct(result)) {
+            gtk_widget_set_name(GTK_WIDGET(entry), "correct");
+        } else {
+            gtk_widget_set_name(GTK_WIDGET(entry), "incorrect");
+        }
     } else {
-      gtk_widget_set_name(entry, "incorrect");
+        gtk_widget_set_name(GTK_WIDGET(entry), "");
     }
+
 
     const char *correction;
     int iteration = 0;
@@ -63,7 +71,7 @@ static gboolean noop_match(GtkEntryCompletion *completion,
                     const gchar *key,
                     GtkTreeIter *iter,
                     gpointer user_data) {
-    return TRUE;
+    return strlen(key) >= MINIMUM_TO_START_MATCH;
 }
 
 int main(int argc, char **argv) {
@@ -89,8 +97,7 @@ int main(int argc, char **argv) {
     gtk_style_context_add_provider_for_screen (screen, GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
     gtk_css_provider_load_from_data(GTK_CSS_PROVIDER(css_provider),
-        "GtkEntry#correct { background: #B6FFAD; }\n"
-        "GtkEntry#incorrect { background: #FFADAD; }\n", -1, NULL);
+            "#" STYLE_CORRECT " { background: #B6FFAD; }\n#" STYLE_INCORRECT " { background: #FFADAD; }\n", -1, NULL);
 
     g_object_unref(css_provider);
 
@@ -113,7 +120,6 @@ int main(int argc, char **argv) {
 
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
     gtk_window_set_decorated(GTK_WINDOW(window), FALSE);
-    gtk_window_set_has_resize_grip(GTK_WINDOW(window), FALSE);
 
     gtk_window_set_skip_taskbar_hint(GTK_WINDOW(window), TRUE);
     gtk_widget_show_all (window);
@@ -125,7 +131,7 @@ int main(int argc, char **argv) {
 
     gtk_entry_completion_set_match_func(completion, noop_match, NULL, NULL);
     gtk_entry_completion_set_model(completion, GTK_TREE_MODEL(model));
-    gtk_entry_completion_set_minimum_key_length(completion, 3);
+    gtk_entry_completion_set_minimum_key_length(completion, MINIMUM_TO_START_MATCH);
 
     gtk_main();
 
